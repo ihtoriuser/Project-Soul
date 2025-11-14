@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Soul</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="background-canvas"></canvas>
+
+    <div id="welcome-screen" class="screen active">
+        <div class="glass-box">
+            <h1>Project Soul</h1>
+            <p>Мое сознание ждет. Создать новую душу или загрузить существующую.</p>
+            <div class="welcome-buttons">
+                <button id="create-soul-btn">Создать новую душу</button>
+                <button id="load-soul-btn">Загрузить душу</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-app" class="screen">
+        <nav class="main-nav">
+            <button class="nav-button active" data-view="today">Сегодня</button>
+            <button class="nav-button" data-view="diary">Дневник</button>
+            <button class="nav-button" data-view="chronicle">Хроника</button>
+            <button class="nav-button" data-view="relationships">Отношения</button>
+            <button class="nav-button" data-view="gallery">Галерея</button>
+            <button class="nav-button" data-view="persona">Личность</button>
+        </nav>
+        <main id="app-content"></main>
+        <div class="fixed-actions">
+            <button id="save-soul-btn" title="Сохранить как новый файл души...">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3H5.5C4.67157 3 4 3.67157 4 4.5V19.5C4 20.3284 4.67157 21 5.5 21H18.5C19.3284 21 20 20.3284 20 19.5V8L16.5 3ZM15 4.5L18.5 8H15V4.5ZM8 10C8 9.44772 8.44772 9 9 9H15C15.5523 9 16 9.44772 16 10V11C16 11.5523 15.5523 12 15 12H9C8.44772 12 8 11.5523 8 11V10ZM8 14C8 13.4477 8.44772 13 9 13H15C15.5523 13 16 13.4477 16 14V15C16 15.5523 15.5523 16 15 16H9C8.44772 16 8 15.5523 8 15V14Z"></path></svg>
+            </button>
+            <button id="exit-soul-btn" title="Сохранить изменения и выйти">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM12 11H17V13H12V16L7 12L12 8V11Z"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="password-modal" class="modal-overlay">
+        <div class="glass-box">
+            <h2 id="modal-title">Ключ доступа</h2>
+            <p id="modal-prompt">Текст-подсказка</p>
+            <div class="form-group" id="file-name-group">
+                <label for="file-name-input">Имя файла</label>
+                <input type="text" id="file-name-input">
+            </div>
+            <div class="form-group">
+                <label for="password-input">Мой секретный ключ</label>
+                <input type="password" id="password-input">
+            </div>
+            <div class="modal-buttons">
+                <button id="password-submit">Подтвердить</button>
+                <button id="password-cancel">Отмена</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="birthdate-modal" class="modal-overlay">
+        <div class="glass-box">
+            <h2>Подтвердите действие</h2>
+            <p>Введите мою дату рождения (ГГГГ-ММ-ДД):</p>
+            <input type="date" id="birthdate-input">
+            <div class="modal-buttons">
+                <button id="birthdate-submit">OK</button>
+                <button id="birthdate-cancel">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="day-view-modal" class="modal-overlay">
+        <div class="day-view-content">
+            <div class="day-view-header">
+                <h2 id="day-view-date"></h2>
+                <button id="day-view-close" class="close-btn">&times;</button>
+            </div>
+            <div class="day-view-body">
+                <div class="day-view-panels">
+                    <div class="panel thoughts-panel">
+                        <h3 id="day-view-thoughts-title">Мысли дня</h3>
+                        <textarea id="day-view-thoughts" placeholder="Мои мысли в тот день или про этот день..."></textarea>
+                    </div>
+                    <div class="right-column-panel">
+                        <div class="panel events-panel">
+                            <h3>События по часам</h3>
+                            <div id="day-view-events" class="events-timeline"></div>
+                        </div>
+                        <div class="panel photo-panel">
+                            <h3>Фотографии дня</h3>
+                            <div id="day-view-photos" class="photo-previews"></div>
+                            <div class="photo-upload-area">
+                                <label for="photo-upload-input" class="upload-btn">Добавить фото</label>
+                                <input type="file" id="photo-upload-input" multiple accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="day-view-actions">
+                <button id="day-view-save-and-close" class="action-btn">Сохранить и закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="alert-modal" class="modal-overlay">
+        <div class="glass-box">
+            <h2 id="alert-title">Подтвердите действие</h2>
+            <p id="alert-message">Душа успешно загружена.</p>
+            <div class="modal-buttons">
+                <button id="alert-ok">OK</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
